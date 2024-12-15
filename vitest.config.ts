@@ -11,11 +11,18 @@ export default defineConfig({
       jsxImportSource: 'hono/jsx',
       remarkPlugins: [remarkGfm],
       rehypePlugins: [[rehypeRaw, { passThrough: ['mdxJsxFlowElement', 'mdxJsxTextElement'] }], rehypePrism],
-      providerImportSource: false
+      providerImportSource: '@mdx-js/react'
     })
   ],
   test: {
-    environment: 'node',
+    environment: 'miniflare3',
+    environmentOptions: {
+      modules: true,
+      bindings: {
+        DB: 'D1Database'
+      }
+    },
+    pool: '@cloudflare/vitest-pool-workers',
     globals: true,
     setupFiles: ['./src/tests/setup.ts'],
     include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
