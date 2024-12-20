@@ -14,18 +14,27 @@ export interface MDXMiddlewareOptions {
 
 export const createMDXMiddleware = (mdxModule: MDXPage, options: MDXMiddlewareOptions = {}): MiddlewareHandler => {
   const { useTailwind = false } = options
-  const MDXContent = mdxModule.default
 
-  return jsxRenderer(({ children }) => {
-    const meta = extractMetaTags(mdxModule)
-    const mdxContent = MDXContent({})
+  return async (c, next) => {
+    try {
+      const MDXContent = mdxModule.default
+      const meta = extractMetaTags(mdxModule)
 
-    return Layout({
-      meta,
-      useTailwind,
-      children: html`${mdxContent}${String(children)}`
-    }) as HtmlEscapedString
-  })
+      const renderer = jsxRenderer(({ children }) => {
+        const mdxContent = MDXContent({})
+        return Layout({
+          meta,
+          useTailwind,
+          children: html`${mdxContent}${String(children)}`
+        }) as HtmlEscapedString
+      })
+
+      return renderer(c, next)
+    } catch (error) {
+      console.error('MDX Rendering Error:', error)
+      throw error
+    }
+  }
 }
 
 // Alias for convenience

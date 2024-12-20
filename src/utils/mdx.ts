@@ -3,11 +3,9 @@ import type { MetaTags } from '../layout/types'
 
 export interface MDXPage {
   default: FC
-  frontmatter?: {
-    meta?: MetaTags
-  }
+  frontmatter?: MetaTags
 }
 
 export const extractMetaTags = (mdxModule: MDXPage): MetaTags => {
-  return mdxModule.frontmatter?.meta || {}
+  return mdxModule.frontmatter || {}
 }
