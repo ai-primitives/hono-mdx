@@ -1,5 +1,5 @@
 /** @jsxImportSource hono/jsx */
-import type { Handler, Context } from 'hono'
+import type { MiddlewareHandler } from 'hono'
 import type { FC } from 'hono/jsx'
 import { jsxRenderer } from 'hono/jsx-renderer'
 import { html } from 'hono/html'
@@ -12,28 +12,27 @@ export interface MDXMiddlewareOptions {
   useTailwind?: boolean
 }
 
-export const createMDXMiddleware = (mdxModule: MDXPage, options: MDXMiddlewareOptions = {}): Handler => {
+export const createMDXMiddleware = (mdxModule: MDXPage, options: MDXMiddlewareOptions = {}): MiddlewareHandler => {
   const { useTailwind = false } = options
+  const MDXContent = mdxModule.default
+  const meta = extractMetaTags(mdxModule)
 
-  return async (c: Context) => {
+  const renderer = jsxRenderer(({ children }) => {
     try {
-      const MDXContent = mdxModule.default
-      const meta = extractMetaTags(mdxModule)
-
-      const renderer = jsxRenderer(({ children }) => {
-        const mdxContent = MDXContent({})
-        return Layout({
-          meta,
-          useTailwind,
-          children: html`${mdxContent}${String(children)}`
-        }) as HtmlEscapedString
-      })
-
-      return renderer(c, () => Promise.resolve())
+      const mdxContent = MDXContent({})
+      return Layout({
+        meta,
+        useTailwind,
+        children: html`${mdxContent}${String(children)}`
+      }) as HtmlEscapedString
     } catch (error) {
       console.error('MDX Rendering Error:', error)
       throw error
     }
+  })
+
+  return async (c, next) => {
+    return renderer(c, next)
   }
 }
 

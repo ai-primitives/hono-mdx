@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import type { Child } from 'hono/jsx'
 
 export interface MetaTags {
   title?: string
@@ -13,6 +13,6 @@ export interface MetaTags {
 
 export interface LayoutProps {
   meta?: MetaTags
-  children?: ReactNode
+  children?: Child
   useTailwind?: boolean
 }
