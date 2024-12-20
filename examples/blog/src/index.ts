@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { mdx } from '../../../src'
+import { Layout, mdx } from '../../../src'
 import homePage from './content/index.mdx'
 import gettingStarted from './content/blog/getting-started.mdx'
 import mdxJsx from './content/blog/mdx-jsx.mdx'

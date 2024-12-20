@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { mdx } from 'hono-mdx'
+import { Layout, mdx } from '../../../src'
 import content from './content/index.mdx'
 
 const app = new Hono()
