@@ -1,0 +1,6 @@
+name = "hono-mdx-coming-soon"
+compatibility_date = "2024-01-01"
+main = "src/index.ts"
+
+[build]
+command = "pnpm run build"

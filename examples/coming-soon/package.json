@@ -1,0 +1,24 @@
+{
+  "name": "hono-mdx-coming-soon",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node build.js && wrangler dev dist/index.js",
+    "build": "node build.js",
+    "deploy": "node build.js && wrangler deploy dist/index.js"
+  },
+  "dependencies": {
+    "@mdx-js/react": "^3.0.0",
+    "hono": "^3.11.7",
+    "hono-mdx": "file:../..",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20231218.0",
+    "@mdx-js/esbuild": "^3.1.0",
+    "esbuild": "^0.24.2",
+    "wrangler": "^3.22.1"
+  }
+}

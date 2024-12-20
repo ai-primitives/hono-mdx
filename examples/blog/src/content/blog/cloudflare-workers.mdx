@@ -1,0 +1,39 @@
+---
+title: Building with Cloudflare Workers
+description: Learn how to build applications with Cloudflare Workers
+keywords: [cloudflare, workers, edge computing]
+ogTitle: Building with Cloudflare Workers | Complete Guide
+ogDescription: A comprehensive guide to building applications with Cloudflare Workers
+date: 2024-01-03
+---
+
+# Building with Cloudflare Workers
+
+Learn how to build applications at the edge with Cloudflare Workers.
+
+## What are Cloudflare Workers?
+
+Cloudflare Workers run your code on Cloudflare's edge network.
+
+## Benefits
+
+- Zero cold starts
+- Global deployment
+- Low latency
+- Cost-effective
+
+## Example
+
+```typescript
+addEventListener('fetch', event => {
+  event.respondWith(handleRequest(event.request))
+})
+
+async function handleRequest(request) {
+  return new Response('Hello worker!', {
+    headers: { 'content-type': 'text/plain' },
+  })
+}
+```
+
+[Back to Home](/)

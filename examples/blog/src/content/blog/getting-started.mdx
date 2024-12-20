@@ -1,0 +1,39 @@
+---
+title: Getting Started with Hono
+description: Learn how to build web applications with Hono framework
+keywords: [hono, web framework, typescript]
+ogTitle: Getting Started with Hono | Complete Guide
+ogDescription: A comprehensive guide to getting started with the Hono web framework
+date: 2024-01-01
+---
+
+# Getting Started with Hono
+
+Hono is a small, simple, and ultrafast web framework for the Edges.
+
+## What is Hono?
+
+Hono (炎) means "flame" in Japanese. It's designed to be simple, ultrafast, and enjoyable to use.
+
+## Key Features
+
+- Ultrafast & Lightweight
+- Middleware Support
+- TypeScript Support
+- JSX Support
+- Compatible with various platforms
+
+## Quick Start
+
+```typescript
+import { Hono } from 'hono'
+
+const app = new Hono()
+
+app.get('/', (c) => c.text('Hello Hono!'))
+
+export default app
+```
+
+
+[Back to Home](/)
