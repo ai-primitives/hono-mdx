@@ -1,9 +1,4 @@
-/**
- * A placeholder function that adds two numbers
- * @param a First number
- * @param b Second number
- * @returns The sum of a and b
- */
-export function add(a: number, b: number): number {
-  return a + b
-}
+export { Layout } from './layout'
+export type { LayoutProps } from './layout/types'
+export { mdx, renderMDX } from './middleware/mdx'
+export type { MDXProps, Frontmatter } from './types/mdx'
