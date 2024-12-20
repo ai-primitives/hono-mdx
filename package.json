@@ -1,17 +1,13 @@
 {
-  "name": "package-template",
+  "name": "hono-mdx",
   "version": "0.1.0",
-  "description": "A modern TypeScript package template with Vitest, Prettier, ESLint, and semantic versioning",
+  "description": "Hono JSX support for MDX via @mdx-js/react",
   "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
-  "bin": {
-    "package-template": "bin/cli.js"
-  },
   "files": [
-    "dist",
-    "bin"
+    "dist"
   ],
   "scripts": {
     "build": "tsc",
@@ -22,20 +18,26 @@
     "prepublishOnly": "pnpm run build"
   },
   "keywords": [
-    "typescript",
-    "template",
-    "package",
-    "cli"
+    "hono",
+    "mdx",
+    "jsx",
+    "react",
+    "cloudflare",
+    "workers"
   ],
   "author": "AI Primitives",
   "license": "MIT",
-  "homepage": "https://mdx.org.ai",
+  "homepage": "https://github.com/ai-primitives/hono-mdx",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ai-primitives/package-template.git"
+    "url": "git+https://github.com/ai-primitives/hono-mdx.git"
   },
   "bugs": {
-    "url": "https://github.com/ai-primitives/package-template/issues"
+    "url": "https://github.com/ai-primitives/hono-mdx/issues"
+  },
+  "dependencies": {
+    "@mdx-js/react": "^3.0.0",
+    "hono": "^3.11.7"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
@@ -43,13 +45,18 @@
     "@semantic-release/github": "^11.0.1",
     "@semantic-release/npm": "^12.0.1",
     "@semantic-release/release-notes-generator": "^14.0.1",
-    "@types/node": "^22.10.2",
+    "@types/node": "^20.10.5",
     "@typescript-eslint/eslint-plugin": "^8.18.0",
     "@typescript-eslint/parser": "^8.18.0",
     "eslint": "^9.17.0",
     "prettier": "^3.4.2",
     "semantic-release": "^24.2.0",
     "typescript": "^5.7.2",
-    "vitest": "^2.1.8"
+    "vitest": "^2.1.8",
+    "@cloudflare/workers-types": "^4.20231218.0"
+  },
+  "peerDependencies": {
+    "@mdx-js/react": "^3.0.0",
+    "hono": "^3.0.0"
   }
 }
