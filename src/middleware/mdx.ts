@@ -1,5 +1,5 @@
 /** @jsxImportSource hono/jsx */
-import type { MiddlewareHandler, Context } from 'hono'
+import type { Handler, Context } from 'hono'
 import type { FC } from 'hono/jsx'
 import { jsxRenderer } from 'hono/jsx-renderer'
 import { html } from 'hono/html'
@@ -12,10 +12,10 @@ export interface MDXMiddlewareOptions {
   useTailwind?: boolean
 }
 
-export const createMDXMiddleware = (mdxModule: MDXPage, options: MDXMiddlewareOptions = {}): MiddlewareHandler => {
+export const createMDXMiddleware = (mdxModule: MDXPage, options: MDXMiddlewareOptions = {}): Handler => {
   const { useTailwind = false } = options
 
-  return async (c, next) => {
+  return async (c: Context) => {
     try {
       const MDXContent = mdxModule.default
       const meta = extractMetaTags(mdxModule)
@@ -29,7 +29,7 @@ export const createMDXMiddleware = (mdxModule: MDXPage, options: MDXMiddlewareOp
         }) as HtmlEscapedString
       })
 
-      return renderer(c, next)
+      return renderer(c, () => Promise.resolve())
     } catch (error) {
       console.error('MDX Rendering Error:', error)
       throw error

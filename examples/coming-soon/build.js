@@ -6,11 +6,13 @@ await esbuild.build({
   bundle: true,
   outfile: 'dist/index.js',
   format: 'esm',
-  platform: 'browser',
+  platform: 'neutral',
+  target: 'esnext',
   plugins: [
     mdx({
       jsxImportSource: 'hono/jsx',
       providerImportSource: '@mdx-js/react',
+      development: process.env.NODE_ENV === 'development',
     }),
   ],
   external: ['__STATIC_CONTENT_MANIFEST'],
