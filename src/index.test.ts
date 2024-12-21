@@ -43,9 +43,8 @@ describe('Layout', () => {
 })
 
 describe('MDX Middleware', () => {
-  it('should compile MDX content', async () => {
-    const mdxContent = `
----
+  it('should compile MDX content and extract frontmatter', async () => {
+    const mdxContent = `---
 title: Test MDX
 description: Testing MDX compilation
 ---
@@ -53,7 +52,10 @@ description: Testing MDX compilation
 # Hello World
 
 This is a test MDX file.
+
+<div>Hello from MDX!</div>
 `
+
     const mockCtx = createMockContext({
       req: { url: 'http://localhost' } as any,
       header: vi.fn(),
@@ -69,6 +71,14 @@ This is a test MDX file.
       title: 'Test MDX',
       description: 'Testing MDX compilation'
     })
+
+    const MDXComponent = mockCtx.get('mdxComponent')
+    expect(MDXComponent).toBeDefined()
+    expect(typeof MDXComponent).toBe('function')
+
+    const rendered = String(MDXComponent({}))
+    expect(rendered).toContain('Hello World')
+    expect(rendered).toContain('Hello from MDX!')
   })
 
   it('should render MDX content with frontmatter', async () => {
