@@ -1,0 +1,34 @@
+{
+  "name": "basic-worker",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "build": "node build.js",
+    "deploy": "wrangler deploy",
+    "types": "wrangler types --experimental-include-runtime"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.13.7",
+    "esbuild-wasm": "^0.19.12",
+    "hono": "^4.6.14"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241218.0",
+    "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
+    "@esbuild-plugins/node-modules-polyfill": "^0.2.2",
+    "@mdx-js/esbuild": "^3.1.0",
+    "@mdx-js/mdx": "^3.1.0",
+    "@mdx-js/react": "^3.1.0",
+    "@rollup/plugin-inject": "^5.0.5",
+    "@types/mdx": "^2.0.13",
+    "@types/node": "^22.10.2",
+    "@types/react": "^18.2.48",
+    "@types/react-dom": "^18.2.18",
+    "esbuild": "^0.19.12",
+    "esbuild-plugin-polyfill-node": "^0.3.0",
+    "hono-mdx": "file:../..",
+    "wrangler": "^3.99.0"
+  }
+}
