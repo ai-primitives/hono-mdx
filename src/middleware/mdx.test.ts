@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest'
 import { mdx, renderMDX } from './mdx'
-import { Context, Hono } from 'hono'
+import { Hono } from 'hono'
 import type { Env } from '../types/env'
 
 describe('MDX Middleware', () => {

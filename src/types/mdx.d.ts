@@ -1,13 +1,15 @@
-import type { FC, ReactNode } from 'react'
+import type { Context } from 'hono'
+import type { FC } from 'hono/jsx'
+import type { ReactNode } from 'react'
 
 export interface MDXProps {
   children?: ReactNode
   components?: Record<string, FC>
-  [key: string]: any
+  [key: string]: unknown
 }
 
 export interface MDXContent extends FC<MDXProps> {
-  frontmatter?: Record<string, any>
+  frontmatter?: Record<string, unknown>
 }
 
 export interface Frontmatter {
@@ -16,5 +18,5 @@ export interface Frontmatter {
   keywords?: string | string[]
   ogImage?: string
   jsonLd?: Record<string, unknown>
-  [key: string]: any
+  [key: string]: unknown
 }

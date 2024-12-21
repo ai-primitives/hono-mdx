@@ -1,4 +1,4 @@
-import type { MiddlewareHandler } from 'hono'
+import type { MiddlewareHandler, Context } from 'hono'
 import { jsx } from 'hono/jsx'
 import * as runtime from 'react/jsx-runtime'
 import { compile } from '@mdx-js/mdx'
@@ -14,7 +14,12 @@ const defaultOptions: CompileOptions = {
   providerImportSource: '@mdx-js/react'
 }
 
-let esbuildTransform: any
+let esbuildTransform: (code: string, options: {
+  loader: string
+  jsxFactory: string
+  jsxFragment: string
+  format: string
+}) => Promise<{ code: string }>
 
 // Initialize esbuild based on environment
 const initializeEsbuild = async () => {
@@ -127,7 +132,7 @@ export const mdx = (options: CompileOptions = {}): MiddlewareHandler => {
 }
 
 export const renderMDX = (props: MDXProps = {}) => {
-  return (c: any) => {
+  return (c: Context) => {
     const MDXComponent = c.get('mdxComponent')
     if (!MDXComponent) {
       throw new Error('No MDX component found. Did you apply the mdx middleware?')

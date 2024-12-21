@@ -57,7 +57,7 @@ describe('Layout', () => {
 
 describe('MDX Middleware', () => {
   it('should compile MDX content and extract frontmatter', async () => {
-    const mdxContent = `---
+    const mdxContent: string = `---
 title: Test MDX
 description: Testing MDX compilation
 ---
@@ -70,7 +70,7 @@ This is a test MDX file.
 `
 
     const mockCtx = createMockContext({
-      req: { url: 'http://localhost' } as any,
+      req: { url: 'http://localhost' } as HonoRequest,
       header: vi.fn(),
       status: vi.fn()
     })
