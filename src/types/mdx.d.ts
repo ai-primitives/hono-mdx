@@ -1,4 +1,3 @@
-import type { Context } from 'hono'
 import type { FC } from 'hono/jsx'
 import type { ReactNode } from 'react'
 

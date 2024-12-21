@@ -3,7 +3,7 @@ import { jsx } from 'hono/jsx'
 import * as runtime from 'react/jsx-runtime'
 import { compile } from '@mdx-js/mdx'
 import type { CompileOptions } from '@mdx-js/mdx'
-import type { MDXContent, MDXProps, Frontmatter } from '../types/mdx'
+import type { MDXProps, Frontmatter } from '../types/mdx'
 
 const defaultOptions: CompileOptions = {
   jsx: true,
