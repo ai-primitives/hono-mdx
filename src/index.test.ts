@@ -38,16 +38,20 @@ describe('Layout', () => {
     }
 
     const result = jsx(Layout, props)
-    const html = result.toString()
+    const htmlContent = String(result)
 
-    expect(html).toContain('<title>Test Page</title>')
-    expect(html).toContain('<meta name="description" content="Test description"')
-    expect(html).toContain('<meta name="keywords" content="test, mdx, hono"')
-    expect(html).toContain('<meta property="og:image" content="https://example.com/image.jpg"')
-    expect(html).toContain('<script type="application/ld+json"')
-    expect(html).toContain('{"@type":"WebPage","name":"Test"}')
-    expect(html).toContain('https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css')
-    expect(html).toContain('https://cdn.tailwindcss.com')
+    expect(htmlContent).toContain('<title>Test Page</title>')
+    expect(htmlContent).toContain('<meta name="description" content="Test description"')
+    expect(htmlContent).toContain('<meta name="keywords" content="test, mdx, hono"')
+    expect(htmlContent).toContain('<meta property="og:image" content="https://example.com/image.jpg"')
+    expect(htmlContent).toContain('<script type="application/ld+json"')
+    expect(htmlContent).toContain('https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css')
+    expect(htmlContent).toContain('https://cdn.tailwindcss.com')
+
+    // Extract and parse JSON-LD content for comparison
+    const jsonLdMatch = htmlContent.match(/<script type="application\/ld\+json">\s*(.*?)\s*<\/script>/s)
+    const jsonLdContent = jsonLdMatch ? JSON.parse(jsonLdMatch[1]) : null
+    expect(jsonLdContent).toEqual({ '@type': 'WebPage', name: 'Test' })
   })
 })
 

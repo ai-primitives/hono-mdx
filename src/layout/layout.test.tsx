@@ -65,6 +65,6 @@ describe('Layout Component', () => {
 
     const layout = Layout(props)
     const content = String(layout)
-    expect(content).toContain('<main className="container">')
+    expect(content).toContain('<main class="container">')
   })
 })
