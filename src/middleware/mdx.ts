@@ -7,11 +7,31 @@ import type { MDXContent, MDXProps, Frontmatter } from '../types/mdx'
 
 const defaultOptions: CompileOptions = {
   jsx: true,
-  jsxImportSource: '@mdx-js/react',
+  jsxImportSource: 'hono/jsx',
   development: true,
   format: 'mdx',
   outputFormat: 'function-body',
   providerImportSource: '@mdx-js/react'
+}
+
+let esbuildTransform: any
+
+// Initialize esbuild based on environment
+const initializeEsbuild = async () => {
+  if (!esbuildTransform) {
+    try {
+      // Try Node.js esbuild first
+      const esbuild = await import('esbuild')
+      esbuildTransform = esbuild.transform
+    } catch {
+      // Fallback to esbuild-wasm in browser
+      const esbuildWasm = await import('esbuild-wasm')
+      await esbuildWasm.initialize({
+        wasmURL: 'https://unpkg.com/esbuild-wasm@0.17.19/esbuild.wasm'
+      })
+      esbuildTransform = esbuildWasm.transform
+    }
+  }
 }
 
 export const mdx = (options: CompileOptions = {}): MiddlewareHandler => {
@@ -23,7 +43,7 @@ export const mdx = (options: CompileOptions = {}): MiddlewareHandler => {
     }
 
     try {
-      // Extract and set frontmatter first, before any potential errors
+      // Extract frontmatter
       const frontmatter: Frontmatter = {}
       let content = mdxContent
 
@@ -41,29 +61,61 @@ export const mdx = (options: CompileOptions = {}): MiddlewareHandler => {
         }
       }
 
-      // Set frontmatter before attempting compilation
       c.set('frontmatter', frontmatter)
 
-      // Compile MDX - this is expected to fail in development
+      // Initialize esbuild if needed
+      await initializeEsbuild()
+
+      // Compile MDX
       const mergedOptions: CompileOptions = {
         ...defaultOptions,
         ...options
       }
 
       const result = await compile(content, mergedOptions)
+      const code = String(result)
 
-      // Create component with runtime context
-      const Component = new Function(
-        'jsx',
-        'jsxs',
-        'Fragment',
-        `
-        ${result}
-        return typeof MDXContent === 'function' ? MDXContent : function() { return null }
-        `
-      )(runtime.jsx, runtime.jsxs, runtime.Fragment)
+      // Transform JSX with esbuild
+      const transformed = await esbuildTransform(code, {
+        loader: 'jsx',
+        jsxFactory: '_jsx',
+        jsxFragment: '_Fragment',
+        format: 'iife'
+      })
 
-      c.set('mdxComponent', Component)
+      // Create component function
+      const createMDXComponent = new Function(
+        '_jsx',
+        '_jsxs',
+        '_Fragment',
+        'props',
+        `
+        const MDXContent = (props) => {
+          ${transformed.code}
+          return typeof MDXContent === 'function' ? MDXContent(props) : null
+        }
+        return MDXContent
+        `
+      )
+
+      // Create wrapper component
+      const WrappedComponent = (props: MDXProps) => {
+        try {
+          const Component = createMDXComponent(
+            runtime.jsx,
+            runtime.jsxs,
+            runtime.Fragment,
+            props
+          )
+          return Component(props)
+        } catch (error) {
+          console.error('Error rendering MDX:', error)
+          c.status(500)
+          return null
+        }
+      }
+
+      c.set('mdxComponent', WrappedComponent)
       await next()
     } catch (error) {
       console.error('MDX compilation error:', error)

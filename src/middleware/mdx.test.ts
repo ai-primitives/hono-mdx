@@ -32,17 +32,13 @@ describe('MDX Middleware', () => {
     })
 
     const res = await app.request('http://localhost/')
-    expect(res.status).toBe(500) // Expect 500 during development
+    expect(res.status).toBe(200)
 
-    const setMdxComponent = mockSet.mock.calls.find(
+    const mdxComponentCall = mockSet.mock.calls.find(
       (call: [string, unknown]) => call[0] === 'mdxComponent'
     )
-    expect(setMdxComponent).toBeFalsy() // Component creation should fail in test
-
-    const error = mockSet.mock.calls.find(
-      (call: [string, unknown]) => call[0] === 'error'
-    )
-    expect(error).toBeTruthy()
+    expect(mdxComponentCall).toBeTruthy()
+    expect(typeof mdxComponentCall?.[1]).toBe('function')
   })
 
   it('should extract frontmatter', async () => {
@@ -61,7 +57,7 @@ This is a test.`
     })
 
     const res = await app.request('http://localhost/')
-    expect(res.status).toBe(500) // Expect 500 during development
+    expect(res.status).toBe(200)
 
     const frontmatterCall = mockSet.mock.calls.find(
       (call: [string, unknown]) => call[0] === 'frontmatter'
@@ -70,10 +66,16 @@ This is a test.`
       title: 'Test',
       description: 'Testing'
     })
+
+    const mdxComponentCall = mockSet.mock.calls.find(
+      (call: [string, unknown]) => call[0] === 'mdxComponent'
+    )
+    expect(mdxComponentCall).toBeTruthy()
+    expect(typeof mdxComponentCall?.[1]).toBe('function')
   })
 
   it('should handle MDX compilation errors', async () => {
-    const invalidMdxContent = '# Test\n\n{invalid jsx'
+    const invalidMdxContent = '# Test\n\n<Component invalid={true'
     mockGet.mockImplementation((key: string) => {
       if (key === 'mdxContent') return invalidMdxContent
       return null

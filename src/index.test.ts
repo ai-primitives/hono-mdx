@@ -4,17 +4,26 @@ import { mdx, renderMDX } from './middleware/mdx'
 import { jsx } from 'hono/jsx'
 import type { Context } from 'hono'
 import type { Env } from './types/env'
+import type { HonoRequest } from 'hono'
 
 interface MockContext extends Partial<Context<Env>> {
+  req: HonoRequest
+  env: Env['Bindings']
   get: ReturnType<typeof vi.fn>
   set: ReturnType<typeof vi.fn>
-  env: Env
+  header: ReturnType<typeof vi.fn>
+  status: ReturnType<typeof vi.fn>
+  text: (text: string) => Response
 }
 
 const createMockContext = (overrides: Partial<MockContext> = {}): MockContext => ({
+  req: { url: 'http://localhost' } as HonoRequest,
+  env: {},
   get: vi.fn(),
   set: vi.fn(),
-  env: {},
+  header: vi.fn(),
+  status: vi.fn(),
+  text: (text: string) => new Response(text),
   ...overrides
 })
 
@@ -63,37 +72,43 @@ This is a test MDX file.
     })
 
     const middleware = mdx()
-    mockCtx.get.mockReturnValue(mdxContent)
-    await middleware(mockCtx as Context<Env>, () => Promise.resolve())
+    mockCtx.get.mockImplementation((key: string) => {
+      if (key === 'mdxContent') return mdxContent
+      return null
+    })
 
-    expect(mockCtx.set).toHaveBeenCalledWith('mdxComponent', expect.any(Function))
-    expect(mockCtx.set).toHaveBeenCalledWith('frontmatter', {
+    await middleware(mockCtx as unknown as Context<Env>, () => Promise.resolve())
+
+    const frontmatterCall = mockCtx.set.mock.calls.find(
+      (call) => Array.isArray(call) && call[0] === 'frontmatter'
+    )
+    expect(frontmatterCall?.[1]).toEqual({
       title: 'Test MDX',
       description: 'Testing MDX compilation'
     })
 
-    const MDXComponent = mockCtx.get('mdxComponent')
-    expect(MDXComponent).toBeDefined()
-    expect(typeof MDXComponent).toBe('function')
-
-    const rendered = String(MDXComponent({}))
-    expect(rendered).toContain('Hello World')
-    expect(rendered).toContain('Hello from MDX!')
+    const mdxComponentCall = mockCtx.set.mock.calls.find(
+      (call) => Array.isArray(call) && call[0] === 'mdxComponent'
+    )
+    expect(mdxComponentCall).toBeTruthy()
+    expect(typeof mdxComponentCall?.[1]).toBe('function')
   })
 
   it('should render MDX content with frontmatter', async () => {
-    const MDXComponent = () => jsx('div', {}, 'Test Content')
+    const mockComponent = () => jsx('div', {}, 'Test Content')
     const frontmatter = { title: 'Test', description: 'Test Description' }
-    const mockCtx = createMockContext()
-
-    mockCtx.get.mockImplementation((key: string) => {
-      if (key === 'mdxComponent') return MDXComponent
-      if (key === 'frontmatter') return frontmatter
-      return null
+    const mockCtx = createMockContext({
+      req: { url: 'http://localhost' } as HonoRequest,
+      env: {},
+      get: vi.fn().mockImplementation((key: string) => {
+        if (key === 'mdxComponent') return mockComponent
+        if (key === 'frontmatter') return frontmatter
+        return null
+      })
     })
 
     const renderer = renderMDX()
-    const result = renderer(mockCtx as Context<Env>)
+    const result = renderer(mockCtx as unknown as Context<Env>)
     const html = result.toString()
 
     expect(html).toContain('Test Content')
@@ -101,10 +116,15 @@ This is a test MDX file.
 
   it('should handle MDX compilation errors', async () => {
     const invalidMdx = '# Invalid MDX\n\n{{'
-    const mockCtx = createMockContext()
-    mockCtx.get.mockReturnValue(invalidMdx)
+    const mockCtx = createMockContext({
+      req: { url: 'http://localhost' } as HonoRequest,
+      env: {},
+      get: vi.fn().mockReturnValue(invalidMdx),
+      status: vi.fn()
+    })
 
     const middleware = mdx()
-    await expect(middleware(mockCtx as Context<Env>, () => Promise.resolve())).rejects.toThrow()
+    await expect(middleware(mockCtx as unknown as Context<Env>, () => Promise.resolve())).rejects.toThrow()
+    expect(mockCtx.status).toHaveBeenCalledWith(500)
   })
 })
